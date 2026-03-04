@@ -1022,6 +1022,28 @@
   </div>
 </section>
 
+
+<!-- DISCLAIMER (light) -->
+<section class="sec sec-light" style="padding:4rem 2rem">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label">免責事項</p>
+      <div class="divider"></div>
+    </div>
+    <div class="reveal d1" style="font-size:0.8rem;color:#888;line-height:2;max-width:760px">
+      <p>本サービス（Revo）は現状有姿にて提供されます。以下の事項について、提供者は一切の責任を負いません。</p>
+      <ul style="margin-top:1rem;padding-left:1.5rem;display:flex;flex-direction:column;gap:0.5rem">
+        <li>システムの不具合・障害・通信エラー等によって生じた損害</li>
+        <li>売上データの消失・破損・漏洩等によって生じた損害</li>
+        <li>税務申告・会計処理に関するいかなる問題</li>
+        <li>Firebase等の第三者サービスの障害・仕様変更によって生じた損害</li>
+        <li>本サービスの利用または利用不能によって生じた逸失利益・間接損害</li>
+      </ul>
+      <p style="margin-top:1.2rem">本サービスの利用にあたっては、必ず<a href="#" style="color:var(--red)">利用規約</a>をご確認ください。税務・会計に関しては、必ず税理士等の専門家にご相談ください。</p>
+    </div>
+  </div>
+</section>
+
 <!-- CTA (dark) -->
 <section class="cta-section" id="contact">
   <div class="container">
@@ -1029,10 +1051,10 @@
     <h2 class="reveal">紙伝票から<span>卒業</span>してみませんか？</h2>
     <p class="reveal d1">メニュー表を送るだけで、すぐに動く状態でお届けします。<br>初期設定費用 ¥9,800（税込）のみ。月額費用はありません。</p>
     <div class="reveal d2">
-      <a href="mailto:info@justfriends.jp" class="cta-btn">メールで問い合わせる</a>
+      <a href="/cdn-cgi/l/email-protection#5f363139301f352a2c2b392d363a313b2c71352f" class="cta-btn">メールで問い合わせる</a>
       <a href="#" class="cta-btn outline">LINEで相談する</a>
     </div>
-    <p class="cta-note reveal d3">info@justfriends.jp</p>
+    <p class="cta-note reveal d3"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f39a9d959cb39986808795819a969d9780dd9983">[email&#160;protected]</a></p>
   </div>
 </section>
 
@@ -1043,11 +1065,11 @@
   <div>
     <a href="#">利用規約</a>
     <a href="#">プライバシーポリシー</a>
-    <a href="mailto:info@justfriends.jp">お問い合わせ</a>
+    <a href="/cdn-cgi/l/email-protection#91f8fff7fed1fbe4e2e5f7e3f8f4fff5e2bffbe1">お問い合わせ</a>
   </div>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 (function() {
   var els = document.querySelectorAll('.reveal');
   if ('IntersectionObserver' in window) {
@@ -1059,16 +1081,4 @@
         }
       });
     }, { threshold: 0.05 });
-    els.forEach(function(el) { obs.observe(el); });
-  } else {
-    els.forEach(function(el) { el.classList.add('visible'); });
-  }
-  setTimeout(function() {
-    document.querySelectorAll('.reveal:not(.visible)').forEach(function(el) {
-      el.classList.add('visible');
-    });
-  }, 800);
-})();
-</script>
-</body>
-</html>
+    els
