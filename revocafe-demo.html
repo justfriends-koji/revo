@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Revo Cafe — Revo POS デモ</title>
+<style>
+:root {
+  --primary: #2c3e2d;
+  --secondary: #4a7358;
+  --accent: #d4a844;
+  --bg: #f3f0eb;
+  --text: #1e2d20;
+  --gray: #999;
+  --danger: #c0392b;
+  --info: #4a7c9e;
+  --success: #5a9e6a;
+  --card: #fff;
+  --border: #ddd8d0;
+  --demo-bar-bg: #1a2a1c;
+}
+* { touch-action: manipulation; -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+body {
+  font-family: 'Helvetica Neue', 'Hiragino Sans', sans-serif;
+  margin: 0; background: var(--bg); color: var(--text);
+  -webkit-user-select: none; overflow: hidden;
+  height: 100vh; height: 100dvh;
+  display: flex; flex-direction: column;
+}
+
+/* ===== DEMO BAR ===== */
+.demo-bar {
+  background: var(--demo-bar-bg);
+  color: rgba(255,255,255,0.65);
+  font-size: 11px;
+  padding: 7px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.demo-badge {
+  background: var(--accent);
+  color: #1a2a1c;
+  font-weight: bold;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  letter-spacing: 0.05em;
+}
+.demo-reset-btn {
+  color: rgba(255,255,255,0.5);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 3px 10px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  background: transparent;
+}
+
+/* ===== APP WRAPPER ===== */
+#app {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background: var(--primary);
+  padding: 0 15px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 52px; flex-shrink: 0;
+  color: #fff;
+}
+.header-title { font-size: 18px; font-weight: 400; letter-spacing: 0.12em; }
+.admin-btn {
+  font-size: 11px; cursor: pointer; padding: 6px 13px;
+  border: 1px solid rgba(255,255,255,0.35); border-radius: 20px;
+  color: rgba(255,255,255,0.8); background: transparent; white-space: nowrap;
+}
+.reload-btn { font-size: 22px; cursor: pointer; padding: 8px; color: var(--accent); }
+
+.view { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+.view.active { display: flex; }
+
+/* ===== INDEX ===== */
+.grid-tables {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 10px; padding: 14px;
+  overflow-y: auto; flex: 1;
+}
+.table-btn {
+  background: var(--card); border: 1.5px solid var(--border);
+  padding: 14px 5px; text-align: center; border-radius: 14px;
+  cursor: pointer; box-shadow: 0 2px 6px rgba(44,62,45,0.07);
+  min-height: 88px; display: flex; flex-direction: column;
+  justify-content: center; align-items: center; gap: 4px;
+}
+.table-btn.occupied { background: #fdf7ec; border-color: var(--accent); }
+.table-name { font-size: 15px; font-weight: 600; color: var(--primary); }
+.price-badge { font-size: 11px; color: var(--accent); font-weight: bold; }
+
+/* ===== GUEST INPUT ===== */
+.guest-input-container {
+  text-align: center; padding: 20px; flex: 1;
+  overflow-y: auto; display: flex; flex-direction: column; justify-content: center;
+}
+.guest-num-display {
+  font-size: 54px; font-weight: 300; margin-bottom: 20px; color: var(--primary);
+  background: #ece8e0; border-radius: 15px; padding: 14px;
+  width: 100%; max-width: 400px; margin-left: auto; margin-right: auto;
+}
+.keypad {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+  width: 100%; max-width: 440px; margin: 0 auto;
+}
+.key-btn {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 20px 0; font-size: 26px; font-weight: 500; border-radius: 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05); cursor: pointer; color: var(--primary);
+}
+
+/* ===== MENU ===== */
+.menu-container { display: flex; flex: 1; overflow: hidden; }
+.sidebar {
+  width: 95px; background: var(--primary); overflow-y: auto;
+  flex-shrink: 0; padding-bottom: 150px !important;
+}
+.cat {
+  padding: 16px 6px; font-size: 11px; text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.07); cursor: pointer;
+  color: rgba(255,255,255,0.5); line-height: 1.4;
+}
+.cat.active {
+  background: rgba(255,255,255,0.1); color: var(--accent);
+  font-weight: bold; border-left: 3px solid var(--accent);
+}
+.item-grid {
+  flex: 1; overflow-y: auto; padding: 10px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 10px; align-content: start; background: var(--bg);
+  padding-bottom: 150px !important;
+}
+.item-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 11px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  box-shadow: 0 2px 5px rgba(44,62,45,0.06);
+}
+.item-name { font-weight: 600; font-size: 13px; height: 2.8em; overflow: hidden; line-height: 1.4; margin-bottom: 2px; color: var(--primary); }
+.item-sub { font-size: 10px; color: #999; line-height: 1.3; margin-bottom: 4px; height: 2.4em; overflow: hidden; }
+.item-price { color: var(--secondary); font-weight: bold; font-size: 14px; margin-bottom: 7px; }
+.qty-ctrl { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #f0ebe3; padding-top: 9px; }
+.btn-circle {
+  width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border);
+  background: var(--bg); display: flex; align-items: center; justify-content: center;
+  font-size: 20px; cursor: pointer; color: var(--primary);
+}
+.btn-add {
+  background: var(--primary); color: #fff; border: none;
+  padding: 9px 0; border-radius: 20px; font-size: 12px; font-weight: bold;
+  flex: 1; margin-left: 7px; cursor: pointer;
+}
+
+footer {
+  width: 100%; display: flex; flex-direction: column;
+  z-index: 100; box-shadow: 0 -3px 10px rgba(0,0,0,0.08); flex-shrink: 0;
+}
+.footer-history {
+  background: var(--secondary); color: #fff;
+  padding: 10px 14px; display: flex; justify-content: space-between;
+  font-size: 13px; cursor: pointer;
+}
+.footer-cart {
+  background: var(--accent); color: var(--primary);
+  padding: 15px 14px; display: flex; justify-content: space-between;
+  font-weight: bold; font-size: 16px; cursor: pointer;
+}
+
+/* ===== LISTS / CHECKOUT ===== */
+.list-container {
+  flex: 1; overflow-y: auto; background: var(--card);
+  padding-bottom: 10px;
+}
+.list-row {
+  display: flex; justify-content: space-between;
+  padding: 15px 14px; border-bottom: 1px solid var(--border); align-items: center;
+}
+.summary-area {
+  padding: 13px 22px; text-align: right; background: var(--card);
+  border-top: 2px solid var(--border); flex-shrink: 0;
+  line-height: 1.6; font-size: 15px;
+}
+.btn-large {
+  width: 90%; display: block; margin: 10px auto; padding: 17px;
+  border: none; border-radius: 36px; font-size: 17px; font-weight: bold;
+  cursor: pointer; text-align: center; flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* ===== ADMIN ===== */
+.admin-nav {
+  display: flex; background: var(--card);
+  border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.admin-nav-btn {
+  flex: 1; padding: 13px; text-align: center;
+  font-size: 12px; font-weight: bold; color: #999; cursor: pointer;
+  border-bottom: 3px solid transparent;
+}
+.admin-nav-btn.active { color: var(--primary); border-bottom-color: var(--accent); }
+.sale-card {
+  background: var(--card); margin: 8px 10px; padding: 13px;
+  border-radius: 14px; box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  border-left: 7px solid var(--accent);
+}
+.sale-time { font-size: 16px; font-weight: bold; color: var(--primary); }
+.sale-table-badge {
+  background: var(--bg); padding: 3px 9px;
+  border-radius: 8px; font-size: 12px; font-weight: bold;
+}
+.sale-detail-info { font-size: 13px; color: #777; margin-bottom: 6px; }
+.sale-price-big { font-size: 21px; font-weight: bold; color: var(--accent); }
+.report-btns {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  padding: 10px 12px; background: var(--card);
+  border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.btn-report {
+  background: var(--primary); color: #fff; border: none;
+  padding: 14px 0; border-radius: 10px; font-weight: bold;
+  font-size: 13px; cursor: pointer;
+}
+
+/* ===== OVERLAYS ===== */
+.overlay {
+  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.72); z-index: 200;
+  justify-content: center; align-items: center; padding: 20px 0;
+}
+.modal {
+  background: var(--card); width: 90%; max-width: 340px;
+  border-radius: 20px; padding: 22px; text-align: center;
+  position: relative; max-height: 90dvh; overflow-y: auto;
+}
+
+/* ===== CHECKOUT ===== */
+.payment-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px;
+}
+.pay-btn {
+  padding: 13px; border: 2px solid var(--border); border-radius: 12px;
+  background: #fff; color: var(--text); font-weight: bold;
+  font-size: 13px; cursor: pointer;
+}
+.pay-btn.selected {
+  background: var(--primary); color: #fff; border-color: var(--primary);
+}
+
+/* ===== SUCCESS ===== */
+#view-success {
+  text-align: center; justify-content: center; background: var(--card);
+}
+</style>
+</head>
+<body>
+
+<!-- DEMO BAR -->
+<div class="demo-bar">
+  <div>
+    <span class="demo-badge">DEMO</span>
+    <span style="margin-left:8px;">これは <strong style="color:#fff;">Revo POS</strong> のデモです。データはブラウザのみに保存されます。</span>
+  </div>
+  <button class="demo-reset-btn" onclick="resetAll()">リセット</button>
+</div>
+
+<div id="app">
+
+<!-- INDEX -->
+<div id="view-index" class="view active">
+  <header>
+    <div class="admin-btn" onclick="showAdmin()">売上管理</div>
+    <div class="header-title">Revo Cafe</div>
+    <div class="reload-btn" onclick="renderIndex()">↻</div>
+  </header>
+  <div class="grid-tables" id="table-grid"></div>
+</div>
+
+<!-- GUEST INPUT -->
+<div id="view-guest" class="view">
+  <header>
+    <span style="font-size:22px;cursor:pointer;color:#fff;" onclick="showIndex()">‹</span>
+    <span style="color:#fff; margin-left:10px;">人数入力</span>
+    <span></span>
+  </header>
+  <div class="guest-input-container">
+    <h2 id="guest-table-name" style="color:var(--primary); font-weight:300; letter-spacing:0.05em;"></h2>
+    <div class="guest-num-display"><span id="guest-count-val">0</span> 名</div>
+    <div class="keypad" id="guest-keypad"></div>
+  </div>
+</div>
+
+<!-- MENU -->
+<div id="view-menu" class="view">
+  <header>
+    <span style="font-size:22px;cursor:pointer;color:#fff;" onclick="showIndex()">×</span>
+    <span style="color:#fff; font-size:14px;">
+      <span id="display-table-id"></span>　<span id="display-guest-count"></span>名
+    </span>
+    <span style="font-size:11px; color:var(--accent);">入店 <span id="display-checkin-time"></span></span>
+  </header>
+  <div class="menu-container">
+    <div class="sidebar" id="side-cats"></div>
+    <div class="item-grid" id="display-items"></div>
+  </div>
+  <footer>
+    <div class="footer-history" onclick="showOrderHistory()">
+      <span>注文済み合計</span>
+      <span id="display-current-total">¥0</span>
+    </div>
+    <div class="footer-cart" onclick="showCart()">
+      <div>🛒 <span id="cart-count">0</span>点</div>
+      <div>注文確認 ›</div>
+    </div>
+  </footer>
+</div>
+
+<!-- CART -->
+<div id="view-cart" class="view">
+  <header>
+    <span style="font-size:22px;cursor:pointer;color:#fff;" onclick="showMenu()">‹</span>
+    <span style="color:#fff; margin-left:10px;">カート確認</span>
+    <span></span>
+  </header>
+  <div class="list-container" id="cart-items-list"></div>
+  <div style="background:var(--card); border-top:1px solid var(--border); padding-bottom:10px;">
+    <button class="btn-large" style="background:var(--primary); color:#fff;" onclick="sendOrder()">注文を通す</button>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div id="view-history" class="view">
+  <header>
+    <span style="font-size:22px;cursor:pointer;color:#fff;" onclick="showMenu()">‹</span>
+    <span style="color:#fff; margin-left:10px;">注文履歴・修正</span>
+    <span></span>
+  </header>
+  <div class="list-container" id="history-items-list"></div>
+  <div class="summary-area" id="history-summary"></div>
+  <div style="background:var(--card); border-top:1px solid var(--border); padding-bottom:10px;">
+    <button class="btn-large" style="background:var(--accent); color:var(--primary);" onclick="showCheckout()">お会計へ ›</button>
+  </div>
+</div>
+
+<!-- CHECKOUT -->
+<div id="view-checkout" class="view">
+  <header>
+    <span style="font-size:22px;cursor:pointer;color:#fff;" onclick="showOrderHistory()">‹</span>
+    <span style="color:#fff; margin-left:10px;">会計確定</span>
+    <span></span>
+  </header>
+  <div style="flex:1; overflow-y:auto; display:flex; flex-direction:column; align-items:center; gap:14px; padding:18px;">
+    <div style="padding:24px 20px; background:var(--card); border-radius:16px; text-align:center; box-shadow:0 4px 12px rgba(0,0,0,0.07); width:85%;">
+      <div id="checkout-final-total" style="font-size:38px; font-weight:bold; color:var(--accent);">¥0</div>
+      <div id="checkout-final-info" style="color:#999; font-size:12px; margin-top:4px;"></div>
+    </div>
+    <div style="width:85%;">
+      <div style="font-size:12px; color:#999; margin-bottom:8px; text-align:center;">お支払い方法</div>
+      <div class="payment-grid">
+        <button class="pay-btn selected" id="co-cash" onclick="selectPayment('現金')">💴 現金</button>
+        <button class="pay-btn" id="co-card" onclick="selectPayment('クレジット')">💳 クレジット</button>
+        <button class="pay-btn" id="co-qr" onclick="selectPayment('QR決済')">📱 QR決済</button>
+        <button class="pay-btn" id="co-ic" onclick="selectPayment('電子マネー')">💰 電子マネー</button>
+      </div>
+    </div>
+    <div id="change-calc-area" style="width:85%; background:var(--card); border-radius:14px; padding:14px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+      <div style="font-size:12px; color:#999; margin-bottom:10px; text-align:center;">お釣り計算</div>
+      <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+        <span style="font-size:12px; color:#666; white-space:nowrap;">お預かり</span>
+        <input id="cash-received" type="number" placeholder="0" oninput="calcChange()"
+          style="flex:1; padding:8px; border:2px solid var(--accent); border-radius:8px; font-size:16px; text-align:right; font-weight:bold;">
+        <span style="font-size:12px; color:#666;">円</span>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;" id="quick-cash-btns"></div>
+      <div style="background:var(--bg); border-radius:10px; padding:8px 12px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="font-size:12px; color:#999;">お釣り</div>
+        <div id="change-amount" style="font-size:26px; font-weight:bold; color:var(--success);">-</div>
+      </div>
+    </div>
+  </div>
+  <button class="btn-large" style="background:var(--success); color:#fff; margin:5px auto;" onclick="completePay()">会計完了</button>
+</div>
+
+<!-- ADMIN -->
+<div id="view-admin" class="view">
+  <header>
+    <span style="font-size:22px;cursor:pointer;color:#fff;" onclick="showIndex()">‹</span>
+    <span style="color:#fff; margin-left:10px;">売上管理</span>
+    <span style="font-size:11px; color:var(--accent);">DEMO</span>
+  </header>
+  <div class="admin-nav">
+    <div id="nav-day" class="admin-nav-btn active" onclick="showAdminMode('day')">本日</div>
+    <div id="nav-dates" class="admin-nav-btn" onclick="showAdminMode('dates')">日別</div>
+    <div id="nav-menu" class="admin-nav-btn" onclick="showAdminMode('menu')">メニュー別</div>
+  </div>
+  <div id="admin-summary" style="padding:14px; background:var(--primary); color:#fff; display:flex; justify-content:space-around; text-align:center; font-size:12px;">
+    <div>件数<br><span id="sum-count" style="font-size:20px; font-weight:bold;">0</span></div>
+    <div>客数<br><span id="sum-guests" style="font-size:20px; font-weight:bold;">0</span></div>
+    <div>合計<br>¥<span id="sum-total" style="font-size:20px; font-weight:bold;">0</span></div>
+  </div>
+  <div class="report-btns">
+    <button class="btn-report" onclick="exportCSV()">CSV出力</button>
+    <button class="btn-report" style="background:var(--success);" onclick="alert('デモでは印刷はスキップされます')">レポート印刷</button>
+  </div>
+  <div class="list-container" id="sales-list" style="background:var(--bg); padding:5px 0;"></div>
+</div>
+
+<!-- SUCCESS -->
+<div id="view-success" class="view">
+  <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1;">
+    <div style="font-size:64px; margin-bottom:16px;">✓</div>
+    <h2 style="color:var(--primary); font-weight:300; letter-spacing:0.1em;">送信完了</h2>
+    <p style="color:#999; font-size:13px;">キッチンに注文を送りました</p>
+    <button class="btn-large" style="background:var(--primary); color:#fff; margin-top:20px;" onclick="showMenu()">メニューへ戻る</button>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<script>
+// ===== メニューデータ =====
+const rawData = [
+  // COFFEE
+  ["コーヒー (HOT)", "COFFEE", 550, "本日のブレンド"],
+  ["コーヒー (ICE)", "COFFEE", 550, "本日のブレンド"],
+  ["カフェラテ (HOT)", "COFFEE", 650, "エスプレッソ × スチームミルク"],
+  ["カフェラテ (ICE)", "COFFEE", 650, "エスプレッソ × ミルク"],
+  ["カプチーノ", "COFFEE", 650, "フォームミルクたっぷり"],
+  ["カフェモカ", "COFFEE", 700, "チョコレートシロップ入り"],
+  ["アメリカーノ (HOT)", "COFFEE", 500, "すっきりした苦味"],
+  ["アメリカーノ (ICE)", "COFFEE", 500, "すっきりした苦味"],
+  // TEA
+  ["アールグレイ (HOT)", "TEA", 600, "上品な香り"],
+  ["アールグレイ (ICE)", "TEA", 600, "上品な香り"],
+  ["カモミール", "TEA", 600, "リラックスハーブティー"],
+  ["抹茶ラテ (HOT)", "TEA", 700, "国産抹茶使用"],
+  ["抹茶ラテ (ICE)", "TEA", 700, "国産抹茶使用"],
+  // SOFT DRINKS
+  ["オレンジジュース", "SOFT DRINKS", 550, "フレッシュ絞り"],
+  ["コーラ", "SOFT DRINKS", 450, ""],
+  ["ジンジャーエール", "SOFT DRINKS", 450, ""],
+  ["ミネラルウォーター", "SOFT DRINKS", 300, ""],
+  // FOOD
+  ["クロワッサン", "FOOD", 380, "バター香るサクサク"],
+  ["バナナマフィン", "FOOD", 420, "ホームメイド"],
+  ["チーズケーキ", "FOOD", 550, "濃厚なめらか"],
+  ["ガトーショコラ", "FOOD", 580, "ビターチョコレート"],
+  ["スコーン", "FOOD", 350, "クロテッドクリーム付き"],
+  ["パニーニ（ハム＆チーズ）", "FOOD", 780, "ランチにどうぞ"],
+  ["カルボナーラトースト", "FOOD", 820, "本日のスペシャル"],
+];
+
+const menuData = [];
+const allCat = { cat: "ALL", items: [] };
+rawData.forEach(r => {
+  allCat.items.push({ n: r[0], p: r[2], c: r[1], s: r[3] || "" });
+  let c = menuData.find(x => x.cat === r[1]);
+  if (!c) { c = { cat: r[1], items: [] }; menuData.push(c); }
+  c.items.push({ n: r[0], p: r[2], s: r[3] || "" });
+});
+menuData.unshift(allCat);
+
+// ===== テーブル =====
+const TABLES = ['1', '2', '3', '4', '5', '6', 'テラスA', 'テラスB', 'カウンター'];
+
+// ===== 状態 =====
+let currentTable = "";
+let currentCart = [];
+let tempGuestCount = "0";
+let currentPaymentMethod = '現金';
+let currentAdminMode = 'day';
+
+// ===== ユーティリティ =====
+function hideAll() {
+  document.querySelectorAll('.view').forEach(v => {
+    v.classList.remove('active');
+    v.style.display = '';
+  });
+}
+function show(id) {
+  hideAll();
+  const el = document.getElementById(id);
+  el.classList.add('active');
+}
+
+function lsGet(key, def) {
+  try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : def; } catch(e) { return def; }
+}
+function lsSet(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+
+// ===== INDEX =====
+function renderIndex() {
+  const g = document.getElementById('table-grid');
+  g.innerHTML = TABLES.map(t => {
+    const h = lsGet('hist_' + t, []);
+    const total = h.reduce((s, i) => s + i.price * i.qty, 0);
+    const guests = lsGet('guests_' + t, 0);
+    return `<div class="table-btn${total > 0 ? ' occupied' : ''}" onclick="onTableClick('${t}')">
+      <div class="table-name">${t}</div>
+      <div class="price-badge">${total > 0 ? '¥' + total.toLocaleString() + ' / ' + guests + '名' : '空席'}</div>
+    </div>`;
+  }).join('');
+}
+
+function showIndex() {
+  show('view-index');
+  renderIndex();
+}
+
+function onTableClick(tId) {
+  currentTable = tId;
+  const hist = lsGet('hist_' + tId, []);
+  if (hist.length > 0) {
+    showMenu();
+  } else {
+    showGuestInput();
+  }
+}
+
+// ===== GUEST INPUT =====
+function showGuestInput() {
+  tempGuestCount = "0";
+  document.getElementById('guest-table-name').innerText = currentTable + ' テーブル';
+  document.getElementById('guest-count-val').innerText = "0";
+  show('view-guest');
+  const k = document.getElementById('guest-keypad');
+  k.innerHTML = [1,2,3,4,5,6,7,8,9,'C',0,'決定'].map(num => {
+    let s = num === '決定' ? 'background:var(--accent); color:var(--primary);' : '';
+    let f = num === '決定' ? 'confirmGuestCount()' : (num === 'C' ? 'clearGuestNum()' : `inputGuestNum(${num})`);
+    return `<button class="key-btn" style="${s}" onclick="${f}">${num}</button>`;
+  }).join('');
+}
+
+function inputGuestNum(n) {
+  if (tempGuestCount === "0") tempGuestCount = n.toString();
+  else if (tempGuestCount.length < 2) tempGuestCount += n.toString();
+  document.getElementById('guest-count-val').innerText = tempGuestCount;
+}
+function clearGuestNum() {
+  tempGuestCount = "0";
+  document.getElementById('guest-count-val').innerText = "0";
+}
+function confirmGuestCount() {
+  let c = parseInt(tempGuestCount);
+  if (c < 1) return alert('人数を入力してください');
+  lsSet('guests_' + currentTable, c);
+  const now = new Date();
+  lsSet('checkin_' + currentTable, now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0'));
+  showMenu();
+}
+
+// ===== MENU =====
+function showMenu() {
+  currentCart = lsGet('cart_' + currentTable, []);
+  show('view-menu');
+  document.getElementById('display-table-id').innerText = currentTable;
+  document.getElementById('display-guest-count').innerText = lsGet('guests_' + currentTable, 0);
+  document.getElementById('display-checkin-time').innerText = lsGet('checkin_' + currentTable, '--:--');
+  renderSidebar();
+  renderItems(menuData[0]);
+  updateFooter();
+}
+
+function renderSidebar() {
+  const side = document.getElementById('side-cats');
+  side.innerHTML = menuData.map((d, idx) => `<div class="cat" onclick="changeCat(this,${idx})">${d.cat}</div>`).join('');
+  side.children[0].classList.add('active');
+}
+
+function changeCat(el, idx) {
+  document.querySelectorAll('.cat').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderItems(menuData[idx]);
+  document.getElementById('display-items').scrollTop = 0;
+}
+
+function renderItems(category) {
+  const container = document.getElementById('display-items');
+  container.innerHTML = category.items.map((item, idx) => {
+    const priceStr = `¥${item.p.toLocaleString()} <small style="font-size:10px;color:#bbb;">(税込)</small>`;
+    const subStr = item.s ? `<div class="item-sub">${item.s}</div>` : `<div class="item-sub"></div>`;
+    return `<div class="item-card">
+      <div>
+        <span class="item-name">${item.n}</span>
+        ${subStr}
+        <span class="item-price">${priceStr}</span>
+      </div>
+      <div class="qty-ctrl">
+        <div class="btn-circle" onclick="changeQty('q${idx}',-1)">-</div>
+        <span id="q${idx}" style="font-weight:bold;min-width:18px;text-align:center;">1</span>
+        <div class="btn-circle" onclick="changeQty('q${idx}',1)">+</div>
+        <button class="btn-add" onclick="addToCart('${item.n.replace(/'/g,"\\'")}',${item.p},'q${idx}')">追加</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function changeQty(id, d) {
+  const el = document.getElementById(id);
+  let v = parseInt(el.innerText) + d;
+  if (v >= 1) el.innerText = v;
+}
+
+function addToCart(name, price, qId) {
+  const qty = parseInt(document.getElementById(qId).innerText);
+  const exist = currentCart.find(i => i.name === name);
+  if (exist) exist.qty += qty; else currentCart.push({ name, price, qty, rate: 0.10 });
+  lsSet('cart_' + currentTable, currentCart);
+  updateFooter();
+  document.getElementById(qId).innerText = 1;
+  // flash feedback
+  const btn = event.target;
+  btn.style.background = 'var(--success)';
+  setTimeout(() => btn.style.background = 'var(--primary)', 400);
+}
+
+function updateFooter() {
+  document.getElementById('cart-count').innerText = currentCart.reduce((s, i) => s + i.qty, 0);
+  const hist = lsGet('hist_' + currentTable, []);
+  const total = hist.reduce((s, i) => s + i.price * i.qty, 0);
+  document.getElementById('display-current-total').innerText = '合計 ¥' + total.toLocaleString();
+}
+
+// ===== CART =====
+function renderCartUI() {
+  document.getElementById('cart-items-list').innerHTML = currentCart.map((i, idx) =>
+    `<div class="list-row">
+      <div style="flex:1;"><b>${i.name}</b><br><small style="color:#999;">¥${i.price.toLocaleString()} × ${i.qty}</small></div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="btn-circle" onclick="changeCartQty(${idx},-1)">-</div>
+        <span style="font-weight:bold;">${i.qty}</span>
+        <div class="btn-circle" onclick="changeCartQty(${idx},1)">+</div>
+        <button onclick="removeFromCart(${idx})" style="color:var(--danger);background:none;border:none;font-size:13px;cursor:pointer;">削除</button>
+      </div>
+    </div>`
+  ).join('') || '<p style="text-align:center;padding:50px;color:#bbb;">カートは空です</p>';
+}
+
+function changeCartQty(idx, delta) {
+  currentCart[idx].qty += delta;
+  if (currentCart[idx].qty < 1) currentCart[idx].qty = 1;
+  lsSet('cart_' + currentTable, currentCart);
+  renderCartUI();
+  updateFooter();
+}
+
+function removeFromCart(idx) {
+  currentCart.splice(idx, 1);
+  lsSet('cart_' + currentTable, currentCart);
+  renderCartUI();
+  updateFooter();
+}
+
+function showCart() {
+  show('view-cart');
+  renderCartUI();
+}
+
+function sendOrder() {
+  if (currentCart.length === 0) return alert('カートが空です');
+  const hist = lsGet('hist_' + currentTable, []);
+  currentCart.forEach(ci => {
+    const ex = hist.find(h => h.name === ci.name);
+    if (ex) ex.qty += ci.qty; else hist.push({ ...ci });
+  });
+  lsSet('hist_' + currentTable, hist);
+  localStorage.removeItem('cart_' + currentTable);
+  currentCart = [];
+  show('view-success');
+  updateFooter();
+}
+
+// ===== HISTORY =====
+function renderHistoryUI() {
+  const hist = lsGet('hist_' + currentTable, []);
+  document.getElementById('history-items-list').innerHTML = hist.map((i, idx) => {
+    const lp = i.price * i.qty;
+    return `<div class="list-row">
+      <div><b>${i.name}</b><br><small style="color:#999;">¥${lp.toLocaleString()}</small></div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="btn-circle" onclick="changeHistQty(${idx},-1)">-</div>
+        <span style="font-weight:bold;">${i.qty}</span>
+        <div class="btn-circle" onclick="changeHistQty(${idx},1)">+</div>
+      </div>
+    </div>`;
+  }).join('') || '<p style="padding:30px; color:#bbb; text-align:center;">なし</p>';
+
+  const grandTotal = hist.reduce((s, i) => s + i.price * i.qty, 0);
+  document.getElementById('history-summary').innerHTML =
+    `<div style="color:#999;font-size:12px;">入店: ${lsGet('checkin_' + currentTable, '--:--')} / ${lsGet('guests_' + currentTable, 0)}名</div>
+     <div>合計: <b style="font-size:22px; color:var(--accent);">¥${grandTotal.toLocaleString()}</b></div>`;
+}
+
+function changeHistQty(idx, delta) {
+  const hist = lsGet('hist_' + currentTable, []);
+  hist[idx].qty += delta;
+  if (hist[idx].qty <= 0) {
+    if (!confirm('削除しますか？')) return;
+    hist.splice(idx, 1);
+  }
+  lsSet('hist_' + currentTable, hist);
+  renderHistoryUI();
+}
+
+function showOrderHistory() {
+  show('view-history');
+  renderHistoryUI();
+}
+
+// ===== CHECKOUT =====
+function showCheckout() {
+  const hist = lsGet('hist_' + currentTable, []);
+  const total = hist.reduce((s, i) => s + i.price * i.qty, 0);
+  document.getElementById('checkout-final-total').innerText = '¥' + total.toLocaleString();
+  document.getElementById('checkout-final-info').innerText =
+    `入店 ${lsGet('checkin_' + currentTable, '--:--')} / ${lsGet('guests_' + currentTable, 0)}名`;
+  show('view-checkout');
+  selectPayment('現金');
+  buildQuickCashBtns(total);
+}
+
+function selectPayment(method) {
+  currentPaymentMethod = method;
+  const map = { '現金': 'co-cash', 'クレジット': 'co-card', 'QR決済': 'co-qr', '電子マネー': 'co-ic' };
+  Object.entries(map).forEach(([m, id]) => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.classList.toggle('selected', m === method);
+  });
+  const area = document.getElementById('change-calc-area');
+  area.style.display = method === '現金' ? 'block' : 'none';
+  if (method === '現金') {
+    document.getElementById('cash-received').value = '';
+    document.getElementById('change-amount').innerText = '-';
+  }
+}
+
+function calcChange() {
+  const total = parseInt(document.getElementById('checkout-final-total').innerText.replace(/[¥,]/g, '')) || 0;
+  const received = parseInt(document.getElementById('cash-received').value) || 0;
+  const el = document.getElementById('change-amount');
+  const change = received - total;
+  if (received === 0) { el.innerText = '-'; el.style.color = 'var(--success)'; }
+  else if (change < 0) { el.innerText = `¥${Math.abs(change).toLocaleString()} 不足`; el.style.color = 'var(--danger)'; }
+  else { el.innerText = `¥${change.toLocaleString()}`; el.style.color = 'var(--success)'; }
+}
+
+function buildQuickCashBtns(total) {
+  document.getElementById('quick-cash-btns').innerHTML =
+    [1000, 2000, 5000, 10000].map(v =>
+      `<button onclick="document.getElementById('cash-received').value=${v}; calcChange();"
+        style="flex:1;padding:8px 0;border:1px solid var(--border);border-radius:8px;background:var(--bg);font-size:12px;font-weight:bold;cursor:pointer;color:var(--info);">¥${v.toLocaleString()}</button>`
+    ).join('');
+}
+
+function completePay() {
+  const hist = lsGet('hist_' + currentTable, []);
+  if (hist.length === 0) return alert('注文がありません');
+  const guests = lsGet('guests_' + currentTable, 0);
+  const checkin = lsGet('checkin_' + currentTable, '--:--');
+  const total = hist.reduce((s, i) => s + i.price * i.qty, 0);
+  const now = new Date();
+  const checkout = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+
+  const sale = {
+    id: Date.now().toString(),
+    tableId: currentTable,
+    guests, checkin, checkout,
+    items: hist, total,
+    paymentMethod: currentPaymentMethod,
+    ts: now.getTime(),
+    date: now.toDateString()
+  };
+
+  const sales = lsGet('revo_sales', []);
+  sales.push(sale);
+  lsSet('revo_sales', sales);
+
+  localStorage.removeItem('hist_' + currentTable);
+  localStorage.removeItem('guests_' + currentTable);
+  localStorage.removeItem('checkin_' + currentTable);
+  localStorage.removeItem('cart_' + currentTable);
+
+  showIndex();
+  alert(`会計完了！\n¥${total.toLocaleString()} (${currentPaymentMethod})`);
+}
+
+// ===== ADMIN =====
+function showAdmin() {
+  show('view-admin');
+  showAdminMode('day');
+}
+
+function showAdminMode(mode) {
+  currentAdminMode = mode;
+  document.querySelectorAll('.admin-nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('nav-' + mode)?.classList.add('active');
+
+  const sales = lsGet('revo_sales', []);
+  const now = new Date();
+  let filtered;
+
+  if (mode === 'day') {
+    filtered = sales.filter(s => s.date === now.toDateString());
+  } else {
+    filtered = sales;
+  }
+
+  const total = filtered.reduce((s, x) => s + x.total, 0);
+  const guests = filtered.reduce((s, x) => s + x.guests, 0);
+  document.getElementById('sum-count').innerText = filtered.length;
+  document.getElementById('sum-guests').innerText = guests;
+  document.getElementById('sum-total').innerText = total.toLocaleString();
+
+  const list = document.getElementById('sales-list');
+
+  if (mode === 'day' || mode === 'dates') {
+    if (mode === 'day') {
+      list.innerHTML = filtered.length === 0
+        ? '<p style="text-align:center;padding:50px;color:#999;">本日データなし</p>'
+        : filtered.slice().reverse().map(s => `
+          <div class="sale-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;border-bottom:1px solid var(--border);padding-bottom:6px;">
+              <span class="sale-time">${s.checkout}</span>
+              <span class="sale-table-badge">${s.tableId}</span>
+            </div>
+            <div class="sale-detail-info">${s.guests}名 / 入店 ${s.checkin} / ${s.paymentMethod}</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+              <span class="sale-price-big">¥${s.total.toLocaleString()}</span>
+              <button onclick="deleteSale('${s.id}')" style="background:var(--danger);color:#fff;border:none;padding:6px 12px;border-radius:14px;font-size:11px;cursor:pointer;">削除</button>
+            </div>
+          </div>`).join('');
+    } else {
+      // dates: group by date
+      const dm = {};
+      sales.forEach(s => {
+        const d = new Date(s.ts);
+        const key = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+        if (!dm[key]) dm[key] = { t: 0, c: 0, g: 0, ts: d.getTime() };
+        dm[key].t += s.total; dm[key].c++; dm[key].g += s.guests;
+      });
+      list.innerHTML = Object.keys(dm).length === 0
+        ? '<p style="text-align:center;padding:50px;color:#999;">データなし</p>'
+        : Object.entries(dm).sort((a,b) => b[1].ts - a[1].ts).map(([date, d]) => `
+          <div class="sale-card">
+            <div class="sale-time" style="font-size:14px;">${date}</div>
+            <div class="sale-detail-info">${d.c}件 / ${d.g}名</div>
+            <div class="sale-price-big">¥${d.t.toLocaleString()}</div>
+          </div>`).join('');
+    }
+  } else if (mode === 'menu') {
+    const im = {};
+    sales.forEach(s => {
+      (s.items || []).forEach(i => {
+        if (!im[i.name]) im[i.name] = { qty: 0, amount: 0 };
+        im[i.name].qty += i.qty;
+        im[i.name].amount += i.price * i.qty;
+      });
+    });
+    list.innerHTML = Object.keys(im).length === 0
+      ? '<p style="text-align:center;padding:50px;color:#999;">データなし</p>'
+      : Object.entries(im).sort((a,b) => b[1].qty - a[1].qty).map(([name, d], i) => `
+        <div class="sale-card">
+          <div class="sale-time" style="font-size:13px;">${i+1}. ${name}</div>
+          <div class="sale-detail-info">${d.qty}点</div>
+          <div class="sale-price-big">¥${d.amount.toLocaleString()}</div>
+        </div>`).join('');
+  }
+}
+
+function deleteSale(id) {
+  if (!confirm('削除しますか？')) return;
+  const sales = lsGet('revo_sales', []).filter(s => s.id !== id);
+  lsSet('revo_sales', sales);
+  showAdminMode(currentAdminMode);
+}
+
+function exportCSV() {
+  const sales = lsGet('revo_sales', []);
+  if (sales.length === 0) return alert('データなし');
+  const header = '日時,テーブル,客数,入店,退店,支払方法,合計';
+  const rows = sales.map(s => {
+    const d = new Date(s.ts);
+    const ds = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${s.checkout}`;
+    return `${ds},${s.tableId},${s.guests}名,${s.checkin},${s.checkout},${s.paymentMethod},${s.total}`;
+  });
+  const blob = new Blob(['\uFEFF' + header + '\n' + rows.join('\n')], { type: 'text/csv' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `RevoDemo_売上.csv`; a.click();
+}
+
+// ===== RESET =====
+function resetAll() {
+  if (!confirm('デモデータをすべてリセットしますか？')) return;
+  TABLES.forEach(t => {
+    localStorage.removeItem('hist_' + t);
+    localStorage.removeItem('guests_' + t);
+    localStorage.removeItem('checkin_' + t);
+    localStorage.removeItem('cart_' + t);
+  });
+  localStorage.removeItem('revo_sales');
+  currentCart = [];
+  showIndex();
+}
+
+// ===== INIT =====
+window.onload = () => { renderIndex(); };
+</script>
+</body>
+</html>
