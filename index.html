@@ -37,13 +37,13 @@
 
   .hero-revolution {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(1.8rem, 6.5vw, 6rem);
+    font-size: clamp(2.4rem, 9vw, 9rem);
     letter-spacing: 0.12em;
     color: transparent;
     -webkit-text-stroke: 1.5px var(--red);
     line-height: 1.1;
     margin-bottom: 0.5rem;
-    animation: fadeUp 0.95s ease both 0.15s;
+    animation: fadeUp 0.95s ease both 0.15s, flash 4s ease-in-out 1.2s infinite;
     text-shadow: 0 0 40px rgba(232,25,10,0.15);
   }
 
@@ -241,6 +241,11 @@
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(28px); }
     to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes flash {
+    0%, 100% { -webkit-text-stroke: 1.5px var(--red); text-shadow: 0 0 10px rgba(232,25,10,0.3); }
+    50% { -webkit-text-stroke: 1.8px #ffaaaa; text-shadow: 0 0 6px rgba(255,200,200,0.6), 0 0 20px rgba(232,25,10,0.5), 0 0 40px rgba(232,25,10,0.2); }
   }
 
   /* ── PAIN CARDS (light) ── */
@@ -1085,7 +1090,7 @@
         </p>
       </div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2rem" class="reveal d2">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem;margin-top:2rem" class="reveal d2">
       <div style="border:1px solid rgba(232,25,10,0.3);padding:2rem;background:#fff9f9">
         <p style="font-size:0.75rem;font-weight:700;color:var(--red);letter-spacing:0.1em;margin-bottom:0.6rem">OPTION 01</p>
         <div style="font-size:1.6rem;font-weight:900;color:#111;margin-bottom:0.2rem">¥5,500<small style="font-size:0.8rem;font-weight:400;color:#666">〜（税込）</small></div>
@@ -1111,7 +1116,7 @@
       <div class="divider" style="margin:1.4rem auto"></div>
       <p style="color:#aaa;font-size:0.95rem;line-height:2;max-width:600px;margin:0 auto">貴店専用にカスタムできる0円POS「Revo」</p>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:3rem" class="reveal d1">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;margin-bottom:3rem" class="reveal d1">
       <!-- Card 1 -->
       <div style="border:1px solid rgba(232,25,10,0.3);padding:2.5rem 2rem;background:rgba(232,25,10,0.04)">
         <div style="font-size:1.8rem;margin-bottom:1rem">👨‍💻</div>
