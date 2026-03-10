@@ -263,6 +263,29 @@ footer {
 #view-success {
   text-align: center; justify-content: center; background: var(--card);
 }
+
+/* ===== UBER EATS ===== */
+.uber-toast {
+  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: #06c167; color: #fff;
+  padding: 14px 22px; border-radius: 16px;
+  font-size: 15px; font-weight: bold;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+  z-index: 9999; white-space: nowrap;
+  display: flex; align-items: center; gap: 10px;
+  opacity: 0; transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+}
+.uber-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.sale-card.uber { border-left-color: #06c167; }
+.uber-nav-badge {
+  background: #06c167; color: #fff;
+  font-size: 10px; font-weight: bold;
+  padding: 2px 8px; border-radius: 10px;
+  margin-left: 6px; vertical-align: middle;
+  animation: uberpulse 1.4s infinite;
+}
+@keyframes uberpulse { 0%,100%{opacity:1} 50%{opacity:0.45} }
 </style>
 </head>
 <body>
@@ -401,7 +424,7 @@ footer {
     <span style="font-size:11px; color:var(--accent);">DEMO</span>
   </header>
   <div class="admin-nav">
-    <div id="nav-day" class="admin-nav-btn active" onclick="showAdminMode('day')">本日</div>
+    <div id="nav-day" class="admin-nav-btn active" onclick="showAdminMode('day')">本日<span id="uber-nav-badge" class="uber-nav-badge" style="display:none;"></span></div>
     <div id="nav-dates" class="admin-nav-btn" onclick="showAdminMode('dates')">日別</div>
     <div id="nav-menu" class="admin-nav-btn" onclick="showAdminMode('menu')">メニュー別</div>
   </div>
@@ -828,20 +851,29 @@ function showAdminMode(mode) {
 
   if (mode === 'day' || mode === 'dates') {
     if (mode === 'day') {
+      // 管理画面を開いたらバッジリセット
+      uberUnreadCount = 0;
+      updateUberBadge();
       list.innerHTML = filtered.length === 0
         ? '<p style="text-align:center;padding:50px;color:#999;">本日データなし</p>'
-        : filtered.slice().reverse().map(s => `
-          <div class="sale-card">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;border-bottom:1px solid var(--border);padding-bottom:6px;">
-              <span class="sale-time">${s.checkout}</span>
-              <span class="sale-table-badge">${s.tableId}</span>
-            </div>
-            <div class="sale-detail-info">${s.guests}名 / 入店 ${s.checkin} / ${s.paymentMethod}</div>
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
-              <span class="sale-price-big">¥${s.total.toLocaleString()}</span>
-              <button onclick="deleteSale('${s.id}')" style="background:var(--danger);color:#fff;border:none;padding:6px 12px;border-radius:14px;font-size:11px;cursor:pointer;">削除</button>
-            </div>
-          </div>`).join('');
+        : filtered.slice().reverse().map(s => {
+            const isUber = s.source === 'uber';
+            return `<div class="sale-card${isUber ? ' uber' : ''}">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;border-bottom:1px solid var(--border);padding-bottom:6px;">
+                <span class="sale-time">${s.checkout}</span>
+                ${isUber
+                  ? '<span style="background:#06c167;color:#fff;padding:3px 10px;border-radius:8px;font-size:12px;font-weight:bold;">🛵 Uber Eats</span>'
+                  : `<span class="sale-table-badge">${s.tableId}</span>`}
+              </div>
+              ${isUber
+                ? `<div class="sale-detail-info">${s.rawItem || s.items[0]?.name || ''}</div>`
+                : `<div class="sale-detail-info">${s.guests}名 / 入店 ${s.checkin} / ${s.paymentMethod}</div>`}
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+                <span class="sale-price-big">¥${s.total.toLocaleString()}</span>
+                <button onclick="deleteSale('${s.id}')" style="background:var(--danger);color:#fff;border:none;padding:6px 12px;border-radius:14px;font-size:11px;cursor:pointer;">削除</button>
+              </div>
+            </div>`;
+          }).join('');
     } else {
       // dates: group by date
       const dm = {};
@@ -912,11 +944,111 @@ function resetAll() {
   });
   localStorage.removeItem('revo_sales');
   currentCart = [];
+  uberUnreadCount = 0;
+  updateUberBadge();
   showIndex();
 }
 
+// ===== UBER EATS デモシミュレーション =====
+// Firestoreのデータ構造: { item, test, receivedAt }
+
+const UBER_DEMO_ORDERS = [
+  { item: 'カフェラテ (ICE) × 2',  test: 'order1', price: 1300 },
+  { item: 'チーズケーキ × 1',       test: 'order2', price: 550  },
+  { item: 'カプチーノ × 1 / スコーン × 2', test: 'order3', price: 1300 },
+  { item: 'アメリカーノ × 3',       test: 'order4', price: 1500 },
+  { item: 'バナナマフィン × 2 / コーヒー (HOT) × 1', test: 'order5', price: 1390 },
+  { item: 'ガトーショコラ × 1 / 抹茶ラテ (HOT) × 1', test: 'order6', price: 1280 },
+  { item: 'パニーニ（ハム＆チーズ）× 1 / コーラ × 1', test: 'order7', price: 1230 },
+];
+
+let uberOrderSeq = 0;
+let uberUnreadCount = 0;
+let uberToastTimer = null;
+
+function simulateUberOrder() {
+  const demo = UBER_DEMO_ORDERS[uberOrderSeq % UBER_DEMO_ORDERS.length];
+  uberOrderSeq++;
+
+  const now = new Date();
+  const timeStr = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+  const orderId = 'UB-' + Date.now().toString().slice(-6);
+
+  // Firestoreから届いた想定のデータ構造
+  const fsData = {
+    item:       demo.item,
+    test:       demo.test,
+    receivedAt: now.getTime()
+  };
+
+  // revo_sales に保存（イートイン売上と同じ構造）
+  const sale = {
+    id:            'uber_' + orderId,
+    source:        'uber',
+    uberOrderId:   orderId,
+    tableId:       '🛵 Uber Eats',
+    guests:        0,
+    checkin:       timeStr,
+    checkout:      timeStr,
+    items:         [{ name: fsData.item, price: demo.price, qty: 1 }],
+    total:         demo.price,
+    paymentMethod: 'Uber Eats',
+    ts:            now.getTime(),
+    date:          now.toDateString(),
+    rawItem:       fsData.item,
+    testId:        fsData.test
+  };
+
+  const sales = lsGet('revo_sales', []);
+  sales.push(sale);
+  lsSet('revo_sales', sales);
+
+  // バッジ・トースト更新
+  uberUnreadCount++;
+  updateUberBadge();
+  showUberToast(orderId, demo.item, demo.price);
+
+  // 管理画面が開いていれば即リフレッシュ
+  if (document.getElementById('view-admin').classList.contains('active')) {
+    showAdminMode(currentAdminMode);
+  }
+}
+
+function showUberToast(orderId, item, price) {
+  let toast = document.getElementById('uber-toast-el');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'uber-toast-el';
+    toast.className = 'uber-toast';
+    document.body.appendChild(toast);
+  }
+  toast.innerHTML = `🛵 <span style="font-size:13px;">${item}</span><span style="opacity:0.85;font-size:12px;margin-left:4px;">¥${price.toLocaleString()}</span>`;
+  toast.classList.add('show');
+  clearTimeout(uberToastTimer);
+  uberToastTimer = setTimeout(() => toast.classList.remove('show'), 5000);
+}
+
+function updateUberBadge() {
+  const badge = document.getElementById('uber-nav-badge');
+  if (!badge) return;
+  if (uberUnreadCount > 0) {
+    badge.textContent = '🛵 ' + uberUnreadCount;
+    badge.style.display = 'inline-block';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
 // ===== INIT =====
-window.onload = () => { renderIndex(); };
+window.onload = () => {
+  renderIndex();
+  // Uber Eats デモ: 25〜50秒ごとにランダムで注文が届く
+  function scheduleNext() {
+    const delay = 25000 + Math.random() * 25000;
+    setTimeout(() => { simulateUberOrder(); scheduleNext(); }, delay);
+  }
+  scheduleNext();
+};
 </script>
 </body>
 </html>
