@@ -4,460 +4,145 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Revo POS｜飲食店専用クラウドPOS、ずっと¥0</title>
-<meta name="description" content="プリンター1台と携帯1台で、すぐ始められる。月額ずっと¥0の飲食店専用クラウドPOSレジ「Revo」。キッチン印刷・セミ券売機・Uber Eats連携対応。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --black: #0D0D0D;
-    --white: #FFFFFF;
-    --gray-50: #F7F7F7;
-    --gray-100: #EEEEEE;
-    --gray-300: #CCCCCC;
-    --gray-500: #888888;
-    --gray-700: #444444;
-    --accent: #FF3B00;
-    --accent-light: #FFF0EC;
-    --accent-dark: #CC2E00;
-    --green: #00A878;
-    --radius: 12px;
-    --radius-lg: 20px;
-  }
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    font-family: 'Noto Sans JP', sans-serif;
-    background: var(--white);
-    color: var(--black);
-    line-height: 1.7;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  /* ── NAV ── */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    background: rgba(255,255,255,0.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--gray-100);
-    padding: 0 24px;
-    height: 60px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .nav-logo {
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 700; font-size: 22px;
-    color: var(--black); text-decoration: none;
-    letter-spacing: -0.5px;
-  }
-  .nav-logo span { color: var(--accent); }
-  .nav-links { display: flex; align-items: center; gap: 32px; }
-  .nav-links a {
-    font-size: 14px; color: var(--gray-700);
-    text-decoration: none; font-weight: 500;
-    transition: color 0.2s;
-  }
-  .nav-links a:hover { color: var(--black); }
-  .btn-nav {
-    background: var(--black); color: var(--white);
-    padding: 9px 20px; border-radius: 8px;
-    font-size: 14px; font-weight: 700;
-    text-decoration: none; transition: background 0.2s;
-  }
-  .btn-nav:hover { background: var(--accent); }
-
-  /* ── HERO ── */
-  #hero {
-    min-height: 100vh;
-    display: flex; align-items: center;
-    padding: 100px 24px 60px;
-    background: var(--white);
-    position: relative; overflow: hidden;
-  }
-  .hero-bg {
-    position: absolute; top: 0; right: 0;
-    width: 50%; height: 100%;
-    background: var(--gray-50);
-    clip-path: polygon(12% 0, 100% 0, 100% 100%, 0% 100%);
-    z-index: 0;
-  }
-  .hero-inner {
-    max-width: 1100px; margin: 0 auto; width: 100%;
-    display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
-    position: relative; z-index: 1;
-  }
-  .hero-badge {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--accent-light); color: var(--accent);
-    border: 1px solid var(--accent);
-    padding: 6px 14px; border-radius: 100px;
-    font-size: 12px; font-weight: 700;
-    margin-bottom: 24px; letter-spacing: 0.5px;
-  }
-  .hero-badge::before {
-    content: ''; width: 6px; height: 6px;
-    background: var(--accent); border-radius: 50%;
-    animation: pulse 1.5s infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(1.4); }
-  }
-  .hero-title {
-    font-size: clamp(32px, 4vw, 52px);
-    font-weight: 900; line-height: 1.2;
-    letter-spacing: -1px; margin-bottom: 8px;
-  }
-  .hero-title .accent { color: var(--accent); }
-  .hero-sub {
-    font-size: clamp(18px, 2.5vw, 28px);
-    font-weight: 700; color: var(--gray-700);
-    margin-bottom: 24px; line-height: 1.4;
-  }
-  .hero-desc {
-    font-size: 15px; color: var(--gray-700);
-    line-height: 1.8; margin-bottom: 36px;
-    max-width: 440px;
-  }
-  .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
-  .btn-primary {
-    background: var(--accent); color: var(--white);
-    padding: 16px 32px; border-radius: var(--radius);
-    font-size: 16px; font-weight: 700;
-    text-decoration: none; display: inline-block;
-    transition: all 0.2s; box-shadow: 0 4px 20px rgba(255,59,0,0.3);
-  }
-  .btn-primary:hover {
-    background: var(--accent-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(255,59,0,0.4);
-  }
-  .btn-secondary {
-    background: var(--white); color: var(--black);
-    padding: 16px 32px; border-radius: var(--radius);
-    font-size: 16px; font-weight: 700;
-    text-decoration: none; display: inline-block;
-    border: 2px solid var(--black);
-    transition: all 0.2s;
-  }
-  .btn-secondary:hover { background: var(--black); color: var(--white); }
-
-  .hero-visual {
-    background: var(--black); border-radius: var(--radius-lg);
-    padding: 32px; color: var(--white);
-    box-shadow: 0 24px 60px rgba(0,0,0,0.15);
-  }
-  .mock-header {
-    display: flex; align-items: center; gap: 8px;
-    margin-bottom: 24px; padding-bottom: 16px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-  }
-  .mock-dot { width: 10px; height: 10px; border-radius: 50%; }
-  .mock-title { font-size: 13px; color: rgba(255,255,255,0.5); margin-left: 4px; }
-  .mock-orders { display: flex; flex-direction: column; gap: 10px; }
-  .mock-order {
-    background: rgba(255,255,255,0.06);
-    border-radius: 10px; padding: 14px 16px;
-    display: flex; justify-content: space-between; align-items: center;
-    border: 1px solid rgba(255,255,255,0.08);
-  }
-  .mock-order-info { font-size: 13px; }
-  .mock-order-info .table { font-weight: 700; font-size: 15px; }
-  .mock-order-info .items { color: rgba(255,255,255,0.5); font-size: 12px; margin-top: 2px; }
-  .mock-order-price { font-size: 18px; font-weight: 700; color: var(--accent); }
-  .mock-total {
-    margin-top: 16px; padding-top: 16px;
-    border-top: 1px solid rgba(255,255,255,0.1);
-    display: flex; justify-content: space-between;
-    font-size: 13px; color: rgba(255,255,255,0.5);
-  }
-  .mock-total strong { color: var(--white); font-size: 22px; }
-  .mock-print-btn {
-    margin-top: 16px; width: 100%;
-    background: var(--accent); color: var(--white);
-    border: none; border-radius: 8px;
-    padding: 14px; font-size: 14px; font-weight: 700;
-    cursor: pointer;
-  }
-
-  /* ── SECTION BASE ── */
-  section { padding: 80px 24px; }
-  .container { max-width: 1100px; margin: 0 auto; }
-  .section-label {
-    font-size: 12px; font-weight: 700; letter-spacing: 2px;
-    color: var(--accent); text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-  .section-title {
-    font-size: clamp(26px, 3.5vw, 40px);
-    font-weight: 900; line-height: 1.25;
-    letter-spacing: -0.5px; margin-bottom: 16px;
-  }
-  .section-desc {
-    font-size: 16px; color: var(--gray-700);
-    max-width: 560px; line-height: 1.8;
-  }
-
-  /* ── PAIN ── */
-  #pain { background: var(--black); color: var(--white); }
-  #pain .section-title { color: var(--white); }
-  .pain-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
-    margin-top: 48px;
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: var(--radius-lg); overflow: hidden;
-  }
-  .pain-item {
-    padding: 32px 28px;
-    background: rgba(255,255,255,0.03);
-    border-right: 1px solid rgba(255,255,255,0.08);
-  }
-  .pain-item:last-child { border-right: none; }
-  .pain-num {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 40px; font-weight: 700;
-    color: rgba(255,255,255,0.12); line-height: 1;
-    margin-bottom: 16px;
-  }
-  .pain-q {
-    font-size: 16px; font-weight: 700;
-    color: var(--white); margin-bottom: 10px; line-height: 1.5;
-  }
-  .pain-a { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.7; }
-
-  /* ── FEATURES ── */
-  #features { background: var(--gray-50); }
-  .features-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
-    margin-top: 48px;
-  }
-  .feature-card {
-    background: var(--white); border-radius: var(--radius-lg);
-    padding: 32px 28px;
-    border: 1px solid var(--gray-100);
-    transition: all 0.25s;
-  }
-  .feature-card:hover {
-    border-color: var(--accent);
-    box-shadow: 0 8px 32px rgba(255,59,0,0.08);
-    transform: translateY(-4px);
-  }
-  .feature-icon {
-    width: 48px; height: 48px;
-    background: var(--accent-light); border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px; margin-bottom: 20px;
-  }
-  .feature-title { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
-  .feature-desc { font-size: 14px; color: var(--gray-700); line-height: 1.7; }
-
-  /* ── USECASE ── */
-  #usecase { background: var(--white); }
-  .usecase-inner {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 64px;
-    align-items: center; margin-top: 48px;
-  }
-  .usecase-tag {
-    display: inline-block;
-    background: var(--black); color: var(--white);
-    padding: 6px 16px; border-radius: 100px;
-    font-size: 12px; font-weight: 700; letter-spacing: 1px;
-    margin-bottom: 20px;
-  }
-  .usecase-title { font-size: clamp(24px, 3vw, 36px); font-weight: 900; margin-bottom: 16px; line-height: 1.3; }
-  .usecase-desc { font-size: 15px; color: var(--gray-700); line-height: 1.8; margin-bottom: 24px; }
-  .usecase-steps { display: flex; flex-direction: column; gap: 0; }
-  .usecase-step {
-    display: flex; gap: 16px; align-items: flex-start;
-    padding: 16px 0;
-    border-bottom: 1px solid var(--gray-100);
-  }
-  .usecase-step:last-child { border-bottom: none; }
-  .step-num {
-    width: 32px; height: 32px; min-width: 32px;
-    background: var(--accent); color: var(--white);
-    border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 700; font-family: 'DM Sans', sans-serif;
-  }
-  .step-text { font-size: 14px; line-height: 1.7; }
-  .step-text strong { font-weight: 700; display: block; margin-bottom: 2px; }
-  .usecase-visual {
-    background: var(--gray-50); border-radius: var(--radius-lg);
-    padding: 32px; border: 1px solid var(--gray-100);
-  }
-  .compare-title { font-size: 13px; font-weight: 700; color: var(--gray-500); margin-bottom: 20px; letter-spacing: 1px; }
-  .compare-row {
-    display: grid; grid-template-columns: 1fr auto auto;
-    gap: 12px; align-items: center;
-    padding: 14px 0; border-bottom: 1px solid var(--gray-100);
-    font-size: 14px;
-  }
-  .compare-row:last-child { border-bottom: none; }
-  .compare-row .label { font-weight: 500; }
-  .compare-chip {
-    padding: 4px 12px; border-radius: 100px;
-    font-size: 12px; font-weight: 700; text-align: center; min-width: 80px;
-  }
-  .chip-good { background: #E6F9F4; color: var(--green); }
-  .chip-bad { background: var(--gray-100); color: var(--gray-500); }
-  .chip-accent { background: var(--accent-light); color: var(--accent); }
-
-  /* ── COMPARE TABLE ── */
-  #compare { background: var(--gray-50); }
-  .compare-table-wrap { margin-top: 48px; overflow-x: auto; }
-  table {
-    width: 100%; border-collapse: collapse;
-    background: var(--white); border-radius: var(--radius-lg);
-    overflow: hidden; border: 1px solid var(--gray-100);
-  }
-  thead tr { background: var(--black); }
-  thead th {
-    padding: 18px 20px; text-align: left;
-    font-size: 14px; font-weight: 700; color: var(--white);
-  }
-  thead th:first-child { border-radius: 0; }
-  thead th.highlight { background: var(--accent); }
-  tbody tr { border-bottom: 1px solid var(--gray-100); }
-  tbody tr:last-child { border-bottom: none; }
-  tbody tr:hover { background: var(--gray-50); }
-  tbody td {
-    padding: 16px 20px; font-size: 14px; color: var(--gray-700);
-  }
-  tbody td:first-child { font-weight: 600; color: var(--black); }
-  tbody td.highlight { font-weight: 700; color: var(--accent); background: var(--accent-light); }
-  .check { color: var(--green); font-size: 16px; }
-  .cross { color: var(--gray-300); font-size: 16px; }
-
-  /* ── PRICING ── */
-  #pricing { background: var(--white); }
-  .pricing-grid {
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;
-    margin-top: 48px; max-width: 760px;
-  }
-  .price-card {
-    border: 2px solid var(--gray-100); border-radius: var(--radius-lg);
-    padding: 36px 32px; position: relative;
-  }
-  .price-card.featured { border-color: var(--accent); }
-  .price-badge {
-    position: absolute; top: -12px; left: 24px;
-    background: var(--accent); color: var(--white);
-    padding: 4px 14px; border-radius: 100px;
-    font-size: 11px; font-weight: 700; letter-spacing: 1px;
-  }
-  .price-name { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
-  .price-sub { font-size: 13px; color: var(--gray-500); margin-bottom: 24px; }
-  .price-amount {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 42px; font-weight: 700; line-height: 1;
-    margin-bottom: 4px;
-  }
-  .price-amount small { font-size: 16px; color: var(--gray-500); }
-  .price-monthly { font-size: 13px; color: var(--green); font-weight: 700; margin-bottom: 24px; }
-  .price-features { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-  .price-features li {
-    font-size: 14px; display: flex; gap: 10px; align-items: flex-start;
-  }
-  .price-features li::before { content: '✓'; color: var(--green); font-weight: 700; min-width: 16px; }
-
-  .monthly-note {
-    margin-top: 32px; padding: 24px;
-    background: var(--gray-50); border-radius: var(--radius);
-    border-left: 4px solid var(--accent);
-  }
-  .monthly-note strong { font-size: 16px; display: block; margin-bottom: 8px; }
-  .monthly-note p { font-size: 14px; color: var(--gray-700); }
-
-  /* ── HOW ── */
-  #how { background: var(--black); color: var(--white); }
-  #how .section-title { color: var(--white); }
-  #how .section-desc { color: rgba(255,255,255,0.5); }
-  .how-steps {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
-    margin-top: 48px; position: relative;
-  }
-  .how-steps::before {
-    content: '';
-    position: absolute; top: 28px; left: 10%; right: 10%;
-    height: 2px; background: rgba(255,255,255,0.1);
-    z-index: 0;
-  }
-  .how-step { text-align: center; padding: 0 16px; position: relative; z-index: 1; }
-  .how-step-num {
-    width: 56px; height: 56px;
-    background: var(--accent); border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 22px; font-weight: 700; color: var(--white);
-    margin: 0 auto 20px;
-  }
-  .how-step-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
-  .how-step-desc { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.6; }
-
-  /* ── CTA ── */
-  #cta {
-    background: var(--accent);
-    padding: 80px 24px; text-align: center;
-  }
-  #cta .section-title { color: var(--white); max-width: 600px; margin: 0 auto 16px; }
-  #cta .section-desc { color: rgba(255,255,255,0.8); margin: 0 auto 40px; }
-  .cta-buttons { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
-  .btn-cta-white {
-    background: var(--white); color: var(--accent);
-    padding: 18px 40px; border-radius: var(--radius);
-    font-size: 16px; font-weight: 700; text-decoration: none;
-    transition: all 0.2s; display: inline-block;
-  }
-  .btn-cta-white:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
-  .btn-cta-outline {
-    background: transparent; color: var(--white);
-    padding: 18px 40px; border-radius: var(--radius);
-    font-size: 16px; font-weight: 700; text-decoration: none;
-    border: 2px solid rgba(255,255,255,0.5);
-    transition: all 0.2s; display: inline-block;
-  }
-  .btn-cta-outline:hover { border-color: var(--white); background: rgba(255,255,255,0.1); }
-
-  /* ── FOOTER ── */
-  footer {
-    background: var(--black); color: rgba(255,255,255,0.4);
-    padding: 40px 24px; text-align: center; font-size: 13px;
-  }
-  footer a { color: rgba(255,255,255,0.4); text-decoration: none; }
-  footer .footer-logo {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 20px; font-weight: 700; color: var(--white);
-    margin-bottom: 12px; display: block;
-  }
-  footer .footer-logo span { color: var(--accent); }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 768px) {
-    .hero-inner { grid-template-columns: 1fr; }
-    .hero-bg { display: none; }
-    .pain-grid { grid-template-columns: 1fr; }
-    .features-grid { grid-template-columns: 1fr; }
-    .usecase-inner { grid-template-columns: 1fr; }
-    .how-steps { grid-template-columns: repeat(2, 1fr); gap: 32px; }
-    .how-steps::before { display: none; }
-    .pricing-grid { grid-template-columns: 1fr; }
-    .nav-links { display: none; }
-    #hero { padding: 90px 20px 60px; }
-  }
-
-  /* ── ANIMATIONS ── */
-  .fade-in {
-    opacity: 0; transform: translateY(24px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-  }
-  .fade-in.visible { opacity: 1; transform: translateY(0); }
+:root{--black:#0D0D0D;--white:#FFFFFF;--gray-50:#F7F7F7;--gray-100:#EEEEEE;--gray-300:#CCCCCC;--gray-500:#888888;--gray-700:#444444;--accent:#FF3B00;--accent-light:#FFF0EC;--accent-dark:#CC2E00;--green:#00A878;--radius:12px;--radius-lg:20px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--white);color:var(--black);line-height:1.7;-webkit-font-smoothing:antialiased}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--gray-100);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-family:'DM Sans',sans-serif;font-weight:700;font-size:22px;color:var(--black);text-decoration:none;letter-spacing:-0.5px}
+.nav-logo span{color:var(--accent)}
+.nav-links{display:flex;align-items:center;gap:32px}
+.nav-links a{font-size:14px;color:var(--gray-700);text-decoration:none;font-weight:500;transition:color 0.2s}
+.nav-links a:hover{color:var(--black)}
+.btn-nav{background:var(--black);color:var(--white);padding:9px 20px;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;transition:background 0.2s}
+.btn-nav:hover{background:var(--accent)}
+#hero{min-height:100vh;display:flex;align-items:center;padding:100px 24px 60px;background:var(--white);position:relative;overflow:hidden}
+.hero-bg{position:absolute;top:0;right:0;width:50%;height:100%;background:var(--gray-50);clip-path:polygon(12% 0,100% 0,100% 100%,0% 100%);z-index:0}
+.hero-inner{max-width:1100px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;position:relative;z-index:1}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--accent-light);color:var(--accent);border:1px solid var(--accent);padding:6px 14px;border-radius:100px;font-size:12px;font-weight:700;margin-bottom:24px;letter-spacing:0.5px}
+.hero-badge::before{content:'';width:6px;height:6px;background:var(--accent);border-radius:50%;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(1.4)}}
+.hero-title{font-size:clamp(32px,4vw,52px);font-weight:900;line-height:1.2;letter-spacing:-1px;margin-bottom:8px}
+.hero-title .accent{color:var(--accent)}
+.hero-sub{font-size:clamp(18px,2.5vw,28px);font-weight:700;color:var(--gray-700);margin-bottom:24px;line-height:1.4}
+.hero-desc{font-size:15px;color:var(--gray-700);line-height:1.8;margin-bottom:36px;max-width:440px}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap}
+.btn-primary{background:var(--accent);color:var(--white);padding:16px 32px;border-radius:var(--radius);font-size:16px;font-weight:700;text-decoration:none;display:inline-block;transition:all 0.2s;box-shadow:0 4px 20px rgba(255,59,0,0.3)}
+.btn-primary:hover{background:var(--accent-dark);transform:translateY(-2px);box-shadow:0 8px 28px rgba(255,59,0,0.4)}
+.btn-secondary{background:var(--white);color:var(--black);padding:16px 32px;border-radius:var(--radius);font-size:16px;font-weight:700;text-decoration:none;display:inline-block;border:2px solid var(--black);transition:all 0.2s}
+.btn-secondary:hover{background:var(--black);color:var(--white)}
+.hero-visual{background:var(--black);border-radius:var(--radius-lg);padding:32px;color:var(--white);box-shadow:0 24px 60px rgba(0,0,0,0.15)}
+.mock-header{display:flex;align-items:center;gap:8px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.mock-dot{width:10px;height:10px;border-radius:50%}
+.mock-title{font-size:13px;color:rgba(255,255,255,0.5);margin-left:4px}
+.mock-orders{display:flex;flex-direction:column;gap:10px}
+.mock-order{background:rgba(255,255,255,0.06);border-radius:10px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(255,255,255,0.08)}
+.mock-order-info .table{font-weight:700;font-size:15px}
+.mock-order-info .items{color:rgba(255,255,255,0.5);font-size:12px;margin-top:2px}
+.mock-order-price{font-size:18px;font-weight:700;color:var(--accent)}
+.mock-total{margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.1);display:flex;justify-content:space-between;font-size:13px;color:rgba(255,255,255,0.5)}
+.mock-total strong{color:var(--white);font-size:22px}
+.mock-print-btn{margin-top:16px;width:100%;background:var(--accent);color:var(--white);border:none;border-radius:8px;padding:14px;font-size:14px;font-weight:700;cursor:pointer}
+section{padding:80px 24px}
+.container{max-width:1100px;margin:0 auto}
+.section-label{font-size:12px;font-weight:700;letter-spacing:2px;color:var(--accent);text-transform:uppercase;margin-bottom:12px}
+.section-title{font-size:clamp(26px,3.5vw,40px);font-weight:900;line-height:1.25;letter-spacing:-0.5px;margin-bottom:16px}
+.section-desc{font-size:16px;color:var(--gray-700);max-width:560px;line-height:1.8}
+#pain{background:var(--black);color:var(--white)}
+#pain .section-title{color:var(--white)}
+.pain-grid{display:grid;grid-template-columns:repeat(3,1fr);margin-top:48px;border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius-lg);overflow:hidden}
+.pain-item{padding:32px 28px;background:rgba(255,255,255,0.03);border-right:1px solid rgba(255,255,255,0.08)}
+.pain-item:last-child{border-right:none}
+.pain-num{font-family:'DM Sans',sans-serif;font-size:40px;font-weight:700;color:rgba(255,255,255,0.12);line-height:1;margin-bottom:16px}
+.pain-q{font-size:16px;font-weight:700;color:var(--white);margin-bottom:10px;line-height:1.5}
+.pain-a{font-size:14px;color:rgba(255,255,255,0.5);line-height:1.7}
+#features{background:var(--gray-50)}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:48px}
+.feature-card{background:var(--white);border-radius:var(--radius-lg);padding:32px 28px;border:1px solid var(--gray-100);transition:all 0.25s}
+.feature-card:hover{border-color:var(--accent);box-shadow:0 8px 32px rgba(255,59,0,0.08);transform:translateY(-4px)}
+.feature-icon{width:48px;height:48px;background:var(--accent-light);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:20px}
+.feature-title{font-size:17px;font-weight:700;margin-bottom:10px}
+.feature-desc{font-size:14px;color:var(--gray-700);line-height:1.7}
+#usecase{background:var(--white)}
+.usecase-inner{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;margin-top:48px}
+.usecase-tag{display:inline-block;background:var(--black);color:var(--white);padding:6px 16px;border-radius:100px;font-size:12px;font-weight:700;letter-spacing:1px;margin-bottom:20px}
+.usecase-title{font-size:clamp(24px,3vw,36px);font-weight:900;margin-bottom:16px;line-height:1.3}
+.usecase-desc{font-size:15px;color:var(--gray-700);line-height:1.8;margin-bottom:24px}
+.usecase-steps{display:flex;flex-direction:column}
+.usecase-step{display:flex;gap:16px;align-items:flex-start;padding:16px 0;border-bottom:1px solid var(--gray-100)}
+.usecase-step:last-child{border-bottom:none}
+.step-num{width:32px;height:32px;min-width:32px;background:var(--accent);color:var(--white);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;font-family:'DM Sans',sans-serif}
+.step-text{font-size:14px;line-height:1.7}
+.step-text strong{font-weight:700;display:block;margin-bottom:2px}
+.usecase-visual{background:var(--gray-50);border-radius:var(--radius-lg);padding:32px;border:1px solid var(--gray-100)}
+.compare-title{font-size:13px;font-weight:700;color:var(--gray-500);margin-bottom:20px;letter-spacing:1px}
+.compare-row{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:14px 0;border-bottom:1px solid var(--gray-100);font-size:13px}
+.compare-row:last-child{border-bottom:none}
+.compare-row .label{font-weight:500}
+.compare-chip{padding:4px 10px;border-radius:100px;font-size:11px;font-weight:700;text-align:center;white-space:nowrap}
+.chip-good{background:#E6F9F4;color:var(--green)}
+.chip-bad{background:var(--gray-100);color:var(--gray-500)}
+.chip-accent{background:var(--accent-light);color:var(--accent)}
+#compare{background:var(--gray-50)}
+.compare-table-wrap{margin-top:48px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;background:var(--white);border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--gray-100)}
+thead tr{background:var(--black)}
+thead th{padding:18px 20px;text-align:left;font-size:14px;font-weight:700;color:var(--white)}
+thead th.highlight{background:var(--accent)}
+tbody tr{border-bottom:1px solid var(--gray-100)}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--gray-50)}
+tbody td{padding:16px 20px;font-size:14px;color:var(--gray-700)}
+tbody td:first-child{font-weight:600;color:var(--black)}
+tbody td.highlight{font-weight:700;color:var(--accent);background:var(--accent-light)}
+.check{color:var(--green)}
+.cross{color:var(--gray-300)}
+#pricing{background:var(--white)}
+.pricing-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:48px;max-width:760px}
+.price-card{border:2px solid var(--gray-100);border-radius:var(--radius-lg);padding:36px 32px;position:relative}
+.price-card.featured{border-color:var(--accent)}
+.price-badge{position:absolute;top:-12px;left:24px;background:var(--accent);color:var(--white);padding:4px 14px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:1px}
+.price-name{font-size:16px;font-weight:700;margin-bottom:6px}
+.price-sub{font-size:13px;color:var(--gray-500);margin-bottom:24px}
+.price-amount{font-family:'DM Sans',sans-serif;font-size:42px;font-weight:700;line-height:1;margin-bottom:4px}
+.price-amount small{font-size:16px;color:var(--gray-500)}
+.price-monthly{font-size:13px;color:var(--green);font-weight:700;margin-bottom:24px}
+.price-features{list-style:none;display:flex;flex-direction:column;gap:10px}
+.price-features li{font-size:14px;display:flex;gap:10px;align-items:flex-start}
+.price-features li::before{content:'✓';color:var(--green);font-weight:700;min-width:16px}
+.monthly-note{margin-top:32px;padding:24px;background:var(--gray-50);border-radius:var(--radius);border-left:4px solid var(--accent)}
+.monthly-note strong{font-size:16px;display:block;margin-bottom:8px}
+.monthly-note p{font-size:14px;color:var(--gray-700)}
+#how{background:var(--black);color:var(--white)}
+#how .section-title{color:var(--white)}
+#how .section-desc{color:rgba(255,255,255,0.5)}
+.how-steps{display:grid;grid-template-columns:repeat(4,1fr);margin-top:48px;position:relative}
+.how-steps::before{content:'';position:absolute;top:28px;left:10%;right:10%;height:2px;background:rgba(255,255,255,0.1);z-index:0}
+.how-step{text-align:center;padding:0 16px;position:relative;z-index:1}
+.how-step-num{width:56px;height:56px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;font-size:22px;font-weight:700;color:var(--white);margin:0 auto 20px}
+.how-step-title{font-size:15px;font-weight:700;margin-bottom:8px}
+.how-step-desc{font-size:13px;color:rgba(255,255,255,0.5);line-height:1.6}
+#cta{background:var(--accent);padding:80px 24px;text-align:center}
+#cta .section-title{color:var(--white);max-width:600px;margin:0 auto 16px}
+#cta .section-desc{color:rgba(255,255,255,0.8);margin:0 auto 40px}
+.cta-buttons{display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
+.btn-cta-white{background:var(--white);color:var(--accent);padding:18px 40px;border-radius:var(--radius);font-size:16px;font-weight:700;text-decoration:none;transition:all 0.2s;display:inline-block}
+.btn-cta-white:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.2)}
+.btn-cta-outline{background:transparent;color:var(--white);padding:18px 40px;border-radius:var(--radius);font-size:16px;font-weight:700;text-decoration:none;border:2px solid rgba(255,255,255,0.5);transition:all 0.2s;display:inline-block}
+.btn-cta-outline:hover{border-color:var(--white);background:rgba(255,255,255,0.1)}
+footer{background:var(--black);color:rgba(255,255,255,0.4);padding:40px 24px;text-align:center;font-size:13px}
+footer a{color:rgba(255,255,255,0.4);text-decoration:none}
+.footer-logo{font-family:'DM Sans',sans-serif;font-size:20px;font-weight:700;color:var(--white);margin-bottom:12px;display:block}
+.footer-logo span{color:var(--accent)}
+@media(max-width:768px){.hero-inner{grid-template-columns:1fr}.hero-bg{display:none}.pain-grid{grid-template-columns:1fr}.features-grid{grid-template-columns:1fr}.usecase-inner{grid-template-columns:1fr}.how-steps{grid-template-columns:repeat(2,1fr);gap:32px}.how-steps::before{display:none}.pricing-grid{grid-template-columns:1fr}.nav-links{display:none}#hero{padding:90px 20px 60px}}
+.fade-in{opacity:0;transform:translateY(24px);transition:opacity 0.6s ease,transform 0.6s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
 </style>
 </head>
 <body>
-
-<!-- NAV -->
 <nav>
   <a href="#" class="nav-logo">Revo<span>.</span></a>
   <div class="nav-links">
@@ -469,23 +154,14 @@
   </div>
 </nav>
 
-<!-- HERO -->
 <section id="hero">
   <div class="hero-bg"></div>
   <div class="hero-inner">
     <div class="hero-content fade-in">
       <div class="hero-badge">飲食店専用クラウドPOS</div>
-      <h1 class="hero-title">
-        プリンター1台と<br>
-        携帯1台で、<br>
-        <span class="accent">すぐ始められる。</span>
-      </h1>
+      <h1 class="hero-title">プリンター1台と<br>携帯1台で、<br><span class="accent">すぐ始められる。</span></h1>
       <p class="hero-sub">ずっと¥0</p>
-      <p class="hero-desc">
-        月額費用は永久に0円。初期費用はプリンターだけ。<br>
-        注文受付からキッチン印刷、売上管理まで、<br>
-        飲食店に必要な機能がすべて揃っています。
-      </p>
+      <p class="hero-desc">月額費用は永久に0円。初期費用はプリンターだけ。<br>注文受付からキッチン印刷、売上管理まで、<br>飲食店に必要な機能がすべて揃っています。</p>
       <div class="hero-ctas">
         <a href="revocafe-demo.html" class="btn-primary">デモを見る →</a>
         <a href="#pricing" class="btn-secondary">料金を確認する</a>
@@ -500,103 +176,52 @@
       </div>
       <div class="mock-orders">
         <div class="mock-order">
-          <div class="mock-order-info">
-            <div class="table">テーブル 3</div>
-            <div class="items">焼鳥盛り合わせ × 2、生ビール × 3</div>
-          </div>
+          <div class="mock-order-info"><div class="table">テーブル 3</div><div class="items">焼鳥盛り合わせ × 2、生ビール × 3</div></div>
           <div class="mock-order-price">¥3,800</div>
         </div>
         <div class="mock-order">
-          <div class="mock-order-info">
-            <div class="table">テーブル 7</div>
-            <div class="items">カレー × 1、ラッシー × 1</div>
-          </div>
+          <div class="mock-order-info"><div class="table">テーブル 7</div><div class="items">カレー × 1、ラッシー × 1</div></div>
           <div class="mock-order-price">¥1,650</div>
         </div>
         <div class="mock-order">
-          <div class="mock-order-info">
-            <div class="table">テーブル 1</div>
-            <div class="items">コース（4名）× 1</div>
-          </div>
+          <div class="mock-order-info"><div class="table">テーブル 1</div><div class="items">コース（4名）× 1</div></div>
           <div class="mock-order-price">¥14,000</div>
         </div>
       </div>
-      <div class="mock-total">
-        <span>本日の売上</span>
-        <strong>¥87,400</strong>
-      </div>
+      <div class="mock-total"><span>本日の売上</span><strong>¥87,400</strong></div>
       <button class="mock-print-btn">🖨 キッチンへ送る</button>
     </div>
   </div>
 </section>
 
-<!-- PAIN -->
 <section id="pain">
   <div class="container">
     <div class="section-label">PROBLEM</div>
     <h2 class="section-title fade-in">「毎月のPOS代、<br>高くないですか？」</h2>
     <div class="pain-grid fade-in">
-      <div class="pain-item">
-        <div class="pain-num">01</div>
-        <div class="pain-q">スマレジやAirレジ、<br>月額1万円以上払ってる…</div>
-        <div class="pain-a">フードビジネスプランやUber連携オプションを使うと、月額1〜2万円以上になることも。年間コストは15〜24万円以上。</div>
-      </div>
-      <div class="pain-item">
-        <div class="pain-num">02</div>
-        <div class="pain-q">券売機を入れたいけど<br>100万円はさすがに高い…</div>
-        <div class="pain-a">タッチパネル券売機の導入コストは90〜200万円。小規模店にはハードルが高すぎる。</div>
-      </div>
-      <div class="pain-item">
-        <div class="pain-num">03</div>
-        <div class="pain-q">導入したけど使いこなせず<br>宝の持ち腐れになってる</div>
-        <div class="pain-a">高機能すぎて設定が複雑。結局、基本的な会計機能しか使えていない店舗が多い。</div>
-      </div>
+      <div class="pain-item"><div class="pain-num">01</div><div class="pain-q">スマレジやAirレジ、<br>月額1万円以上払ってる…</div><div class="pain-a">フードビジネスプランやUber連携オプションを使うと、月額1〜2万円以上になることも。年間コストは15〜24万円以上。</div></div>
+      <div class="pain-item"><div class="pain-num">02</div><div class="pain-q">券売機を入れたいけど<br>100万円はさすがに高い…</div><div class="pain-a">タッチパネル券売機の導入コストは90〜200万円。小規模店にはハードルが高すぎる。</div></div>
+      <div class="pain-item"><div class="pain-num">03</div><div class="pain-q">導入したけど使いこなせず<br>宝の持ち腐れになってる</div><div class="pain-a">高機能すぎて設定が複雑。結局、基本的な会計機能しか使えていない店舗が多い。</div></div>
     </div>
   </div>
 </section>
 
-<!-- FEATURES -->
 <section id="features">
   <div class="container">
     <div class="section-label">FEATURES</div>
     <h2 class="section-title fade-in">Revoでできること</h2>
     <p class="section-desc fade-in">シンプルに、必要な機能だけ。飲食店の現場に合わせて設計されています。</p>
     <div class="features-grid">
-      <div class="feature-card fade-in">
-        <div class="feature-icon">📋</div>
-        <div class="feature-title">注文管理</div>
-        <div class="feature-desc">テーブルごとに注文を管理。追加注文もその場でサクサク入力。ミスゼロで厨房へ。</div>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">🖨</div>
-        <div class="feature-title">キッチン印刷</div>
-        <div class="feature-desc">Star mC-Print3でキッチン票を自動印刷。CloudPRNT対応で、Wi-Fiがなくても安定稼働。</div>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">💰</div>
-        <div class="feature-title">会計・レシート</div>
-        <div class="feature-desc">テーブルごとの合計を即表示。レシート・領収書も1タップで印刷。インボイス対応。</div>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">📊</div>
-        <div class="feature-title">売上管理</div>
-        <div class="feature-desc">日次・月次の売上をリアルタイムで確認。弥生会計向けCSV出力もワンクリック。</div>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">🏪</div>
-        <div class="feature-title">複数店舗対応</div>
-        <div class="feature-desc">1つのシステムで複数店舗を管理。異業態でも同じ基盤で運用できます。</div>
-      </div>
-      <div class="feature-card fade-in">
-        <div class="feature-icon">🚴</div>
-        <div class="feature-title">Uber Eats連携</div>
-        <div class="feature-desc">Uber Eatsの注文もRevoで一元管理。店内注文と合わせて売上を把握。（審査中）</div>
-      </div>
+      <div class="feature-card fade-in"><div class="feature-icon">📋</div><div class="feature-title">注文管理</div><div class="feature-desc">テーブルごとに注文を管理。追加注文もその場でサクサク入力。ミスゼロで厨房へ。</div></div>
+      <div class="feature-card fade-in"><div class="feature-icon">🖨</div><div class="feature-title">キッチン印刷</div><div class="feature-desc">Star mC-Print3でキッチン票を自動印刷。CloudPRNT対応で安定稼働。</div></div>
+      <div class="feature-card fade-in"><div class="feature-icon">💰</div><div class="feature-title">会計・レシート</div><div class="feature-desc">テーブルごとの合計を即表示。レシート・領収書も1タップで印刷。インボイス対応。</div></div>
+      <div class="feature-card fade-in"><div class="feature-icon">📊</div><div class="feature-title">売上管理</div><div class="feature-desc">日次・月次の売上をリアルタイムで確認。弥生会計向けCSV出力もワンクリック。</div></div>
+      <div class="feature-card fade-in"><div class="feature-icon">🏪</div><div class="feature-title">複数店舗対応</div><div class="feature-desc">1つのシステムで複数店舗を管理。異業態でも同じ基盤で運用できます。</div></div>
+      <div class="feature-card fade-in"><div class="feature-icon">🚴</div><div class="feature-title">Uber Eats連携</div><div class="feature-desc">Uber Eatsの注文もRevoで一元管理。店内注文と合わせて売上を把握。（審査中）</div></div>
     </div>
   </div>
 </section>
 
-<!-- USECASE -->
 <section id="usecase">
   <div class="container">
     <div class="section-label">USE CASE</div>
@@ -605,67 +230,25 @@
       <div class="fade-in">
         <div class="usecase-tag">使い方例 #01</div>
         <h3 class="usecase-title">セミ券売機として<br>使う</h3>
-        <p class="usecase-desc">
-          ラーメン店・定食店・カレー屋など、前払いスタイルの飲食店に。
-          券売機の1/20のコストで、近い運用が実現できます。
-        </p>
+        <p class="usecase-desc">ラーメン店・定食店・カレー屋など、前払いスタイルの飲食店に。券売機の1/20のコストで、近い運用が実現できます。</p>
         <div class="usecase-steps">
-          <div class="usecase-step">
-            <div class="step-num">1</div>
-            <div class="step-text">
-              <strong>お客様が来店・着席</strong>
-              スタッフがRevoで注文を入力します。
-            </div>
-          </div>
-          <div class="usecase-step">
-            <div class="step-num">2</div>
-            <div class="step-text">
-              <strong>キッチンへ自動送信</strong>
-              注文内容がキッチンのプリンターに即印刷。
-            </div>
-          </div>
-          <div class="usecase-step">
-            <div class="step-num">3</div>
-            <div class="step-text">
-              <strong>退店時にお会計</strong>
-              Revoの会計画面で合計を表示。ドロアーで現金受け取り。
-            </div>
-          </div>
+          <div class="usecase-step"><div class="step-num">1</div><div class="step-text"><strong>お客様が来店・着席</strong>スタッフがRevoで注文を入力します。</div></div>
+          <div class="usecase-step"><div class="step-num">2</div><div class="step-text"><strong>キッチンへ自動送信</strong>注文内容がキッチンのプリンターに即印刷。</div></div>
+          <div class="usecase-step"><div class="step-num">3</div><div class="step-text"><strong>退店時にお会計</strong>Revoの会計画面で合計を表示。ドロアーで現金受け取り。</div></div>
         </div>
       </div>
       <div class="usecase-visual fade-in">
         <div class="compare-title">REVO vs 券売機（比較）</div>
-        <div class="compare-row">
-          <span class="label">初期費用</span>
-          <span class="compare-chip chip-accent">Revo: ～5万円</span>
-          <span class="compare-chip chip-bad">券売機: 90〜200万</span>
-        </div>
-        <div class="compare-row">
-          <span class="label">月額費用</span>
-          <span class="compare-chip chip-good">Revo: ¥0</span>
-          <span class="compare-chip chip-bad">券売機: 保守費別途</span>
-        </div>
-        <div class="compare-row">
-          <span class="label">メニュー変更</span>
-          <span class="compare-chip chip-good">Revo: 即・無料</span>
-          <span class="compare-chip chip-bad">券売機: 有料・時間かかる</span>
-        </div>
-        <div class="compare-row">
-          <span class="label">導入までの期間</span>
-          <span class="compare-chip chip-good">Revo: 当日〜</span>
-          <span class="compare-chip chip-bad">券売機: 数週間</span>
-        </div>
-        <div class="compare-row">
-          <span class="label">省人化</span>
-          <span class="compare-chip chip-accent">Revo: 会計1アクション</span>
-          <span class="compare-chip chip-good">券売機: 完全無人</span>
-        </div>
+        <div class="compare-row"><span class="label">初期費用</span><span class="compare-chip chip-accent">Revo: ～5万円</span><span class="compare-chip chip-bad">券売機: 90〜200万</span></div>
+        <div class="compare-row"><span class="label">月額費用</span><span class="compare-chip chip-good">Revo: ¥0</span><span class="compare-chip chip-bad">券売機: 保守費別途</span></div>
+        <div class="compare-row"><span class="label">メニュー変更</span><span class="compare-chip chip-good">Revo: 即・無料</span><span class="compare-chip chip-bad">券売機: 有料</span></div>
+        <div class="compare-row"><span class="label">導入期間</span><span class="compare-chip chip-good">Revo: 当日〜</span><span class="compare-chip chip-bad">券売機: 数週間</span></div>
+        <div class="compare-row"><span class="label">省人化</span><span class="compare-chip chip-accent">Revo: 会計1アクション</span><span class="compare-chip chip-good">券売機: 完全無人</span></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- COMPARE -->
 <section id="compare">
   <div class="container">
     <div class="section-label">COMPARISON</div>
@@ -673,58 +256,20 @@
     <p class="section-desc fade-in">同じ「0円スタート」でも、使い続けると差が出てきます。</p>
     <div class="compare-table-wrap fade-in">
       <table>
-        <thead>
-          <tr>
-            <th></th>
-            <th class="highlight">Revo POS</th>
-            <th>スマレジ</th>
-            <th>Airレジ</th>
-          </tr>
-        </thead>
+        <thead><tr><th></th><th class="highlight">Revo POS</th><th>スマレジ</th><th>Airレジ</th></tr></thead>
         <tbody>
-          <tr>
-            <td>月額費用（基本）</td>
-            <td class="highlight">¥0（永久）</td>
-            <td>¥0〜¥8,800〜</td>
-            <td>¥0〜</td>
-          </tr>
-          <tr>
-            <td>Uber Eats連携</td>
-            <td class="highlight">¥0（予定）</td>
-            <td>月額 +¥12,000〜</td>
-            <td>非対応</td>
-          </tr>
-          <tr>
-            <td>キッチン印刷</td>
-            <td class="highlight"><span class="check">✓</span></td>
-            <td><span class="check">✓</span>（有料プラン）</td>
-            <td><span class="check">✓</span>（有料プラン）</td>
-          </tr>
-          <tr>
-            <td>セミ券売機的運用</td>
-            <td class="highlight"><span class="check">✓</span></td>
-            <td>券売機 月額¥19,800〜</td>
-            <td><span class="cross">—</span></td>
-          </tr>
-          <tr>
-            <td>対応プリンター</td>
-            <td class="highlight">Star mC-Print3</td>
-            <td>EPSON TM-m30</td>
-            <td>Star / EPSON</td>
-          </tr>
-          <tr>
-            <td>弥生会計連携</td>
-            <td class="highlight"><span class="check">✓</span>（CSV）</td>
-            <td><span class="check">✓</span></td>
-            <td><span class="cross">—</span></td>
-          </tr>
+          <tr><td>月額費用（基本）</td><td class="highlight">¥0（永久）</td><td>¥0〜¥8,800〜</td><td>¥0〜</td></tr>
+          <tr><td>Uber Eats連携</td><td class="highlight">¥0（予定）</td><td>月額 +¥12,000〜</td><td>非対応</td></tr>
+          <tr><td>キッチン印刷</td><td class="highlight"><span class="check">✓</span></td><td><span class="check">✓</span>（有料プラン）</td><td><span class="check">✓</span>（有料プラン）</td></tr>
+          <tr><td>セミ券売機的運用</td><td class="highlight"><span class="check">✓</span></td><td>月額¥19,800〜</td><td><span class="cross">—</span></td></tr>
+          <tr><td>対応プリンター</td><td class="highlight">Star mC-Print3</td><td>EPSON TM-m30</td><td>Star / EPSON</td></tr>
+          <tr><td>弥生会計連携</td><td class="highlight"><span class="check">✓</span>（CSV）</td><td><span class="check">✓</span></td><td><span class="cross">—</span></td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </section>
 
-<!-- PRICING -->
 <section id="pricing">
   <div class="container">
     <div class="section-label">PRICING</div>
@@ -764,70 +309,43 @@
   </div>
 </section>
 
-<!-- HOW -->
 <section id="how">
   <div class="container">
     <div class="section-label">HOW TO START</div>
     <h2 class="section-title fade-in">導入の流れ</h2>
     <p class="section-desc fade-in">お問い合わせから最短で当日スタートできます。</p>
     <div class="how-steps">
-      <div class="how-step fade-in">
-        <div class="how-step-num">1</div>
-        <div class="how-step-title">お問い合わせ</div>
-        <div class="how-step-desc">フォームまたはメールでご連絡ください。まずは気軽に相談を。</div>
-      </div>
-      <div class="how-step fade-in">
-        <div class="how-step-num">2</div>
-        <div class="how-step-title">プリンター手配</div>
-        <div class="how-step-desc">セットをご注文いただくか、お手持ちのStar機をお使いいただけます。</div>
-      </div>
-      <div class="how-step fade-in">
-        <div class="how-step-num">3</div>
-        <div class="how-step-title">初期設定</div>
-        <div class="how-step-desc">メニュー登録・プリンター設定をサポート。リモートでも対応します。</div>
-      </div>
-      <div class="how-step fade-in">
-        <div class="how-step-num">4</div>
-        <div class="how-step-title">スタート🎉</div>
-        <div class="how-step-desc">設定完了後、その日から使えます。月額は永久に¥0のまま。</div>
-      </div>
+      <div class="how-step fade-in"><div class="how-step-num">1</div><div class="how-step-title">お問い合わせ</div><div class="how-step-desc">フォームまたはメールでご連絡ください。まずは気軽に相談を。</div></div>
+      <div class="how-step fade-in"><div class="how-step-num">2</div><div class="how-step-title">プリンター手配</div><div class="how-step-desc">セットをご注文いただくか、お手持ちのStar機をお使いいただけます。</div></div>
+      <div class="how-step fade-in"><div class="how-step-num">3</div><div class="how-step-title">初期設定</div><div class="how-step-desc">メニュー登録・プリンター設定をサポート。リモートでも対応します。</div></div>
+      <div class="how-step fade-in"><div class="how-step-num">4</div><div class="how-step-title">スタート🎉</div><div class="how-step-desc">設定完了後、その日から使えます。月額は永久に¥0のまま。</div></div>
     </div>
   </div>
 </section>
 
-<!-- CTA -->
 <section id="cta">
   <div class="container">
     <h2 class="section-title">まずはデモを試してみてください</h2>
     <p class="section-desc">実際の操作感を、登録なしで体験できます。</p>
     <div class="cta-buttons">
       <a href="revocafe-demo.html" class="btn-cta-white">デモを見る →</a>
-      <a href="mailto:info@justfriends.jp" class="btn-cta-outline">お問い合わせ</a>
+      <a href="form.html" class="btn-cta-outline">お問い合わせ</a>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer>
   <a href="#" class="footer-logo">Revo<span>.</span></a>
-  <p>飲食店専用クラウドPOS「Revo」は株式会社ジャストフレンズが運営しています。</p>
+  <p><a href="mailto:info@revoreji.com">info@revoreji.com</a> ｜ 札幌市</p>
   <br>
-  <p><a href="mailto:info@justfriends.jp">info@justfriends.jp</a> ｜ 札幌市</p>
-  <br>
-  <p>© 2025 Just Friends Inc. All rights reserved.</p>
+  <p>© 2025 Revo</p>
 </footer>
 
 <script>
-  // Fade in on scroll
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-
-  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 </script>
 </body>
 </html>
